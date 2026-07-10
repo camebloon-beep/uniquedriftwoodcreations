@@ -502,26 +502,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fetch sculpture statuses from the database and apply sold badges
   async function fetchSculptureStatuses() {
     try {
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const localStatuses = localStorage.getItem('udc_sculpture_statuses');
+        if (localStatuses) {
+          applyStatuses(JSON.parse(localStatuses));
+          return;
+        }
+      }
+
       const res = await fetch('/api/sculptures');
       if (!res.ok) return;
       const statuses = await res.json();
-      statuses.forEach(({ id, status }) => {
-        if (status === 'sold') {
-          const itemEl = galleryGrid.querySelector(`[data-id="${id}"]`);
-          if (itemEl) {
-            itemEl.classList.add('sold');
-            // Add sold badge overlay
+      applyStatuses(statuses);
+    } catch (err) {
+      console.log('Status fetch skipped (API not available)');
+    }
+  }
+
+  function applyStatuses(statuses) {
+    statuses.forEach(({ id, status }) => {
+      if (status === 'sold') {
+        const itemEl = galleryGrid.querySelector(`[data-id="${id}"]`);
+        if (itemEl) {
+          itemEl.classList.add('sold');
+          // Add sold badge overlay if not present
+          if (!itemEl.querySelector('.sold-badge')) {
             const badge = document.createElement('div');
             badge.className = 'sold-badge';
             badge.innerHTML = '<span>SOLD</span>';
             itemEl.appendChild(badge);
           }
         }
-      });
-    } catch (err) {
-      // Silently fail — gallery still works without statuses
-      console.log('Status fetch skipped (API not available)');
-    }
+      }
+    });
   }
   fetchSculptureStatuses();
 
@@ -698,6 +711,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const subjectVal = document.getElementById('subject').value;
     const messageVal = document.getElementById('message').value;
     
+    // If running locally, mock save to localStorage to support offline previewing
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      setTimeout(() => {
+        const localInquiries = JSON.parse(localStorage.getItem('udc_inquiries') || '[]');
+        localInquiries.push({
+          id: Date.now(),
+          name: nameVal,
+          email: emailVal,
+          subject: subjectVal,
+          message: messageVal,
+          is_read: false,
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem('udc_inquiries', JSON.stringify(localInquiries));
+        
+        formStatusMsg.textContent = `[LOCAL TEST] Thank you, ${nameVal}! Your inquiry about "${subjectVal}" has been saved to local preview storage.`;
+        formStatusMsg.className = 'form-status-msg success';
+        formStatusMsg.style.display = 'block';
+        contactForm.reset();
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+      }, 800);
+      return;
+    }
+
     try {
       const res = await fetch('/api/inquiries', {
         method: 'POST',

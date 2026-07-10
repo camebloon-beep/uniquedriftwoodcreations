@@ -99,6 +99,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const password = document.getElementById('login-password').value;
 
+    // Local host bypass for previewing
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      setTimeout(() => {
+        authToken = 'mock_local_token';
+        localStorage.setItem('udc_admin_token', authToken);
+        showDashboard();
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Enter Dashboard';
+      }, 500);
+      return;
+    }
+
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
@@ -143,6 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== INQUIRIES =====
   async function loadInquiries() {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      const localInquiries = localStorage.getItem('udc_inquiries') || '[]';
+      renderInquiries(JSON.parse(localInquiries));
+      return;
+    }
+
     try {
       const res = await fetch('/api/admin/inquiries', {
         headers: { 'Authorization': `Bearer ${authToken}` },
@@ -206,6 +224,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentlyRead = btn.getAttribute('data-read') === 'true';
         const newStatus = !currentlyRead;
 
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          const localInquiries = JSON.parse(localStorage.getItem('udc_inquiries') || '[]');
+          const inq = localInquiries.find(i => i.id === id);
+          if (inq) inq.is_read = newStatus;
+          localStorage.setItem('udc_inquiries', JSON.stringify(localInquiries));
+          loadInquiries();
+          return;
+        }
+
         try {
           await fetch('/api/admin/inquiries', {
             method: 'PATCH',
@@ -232,6 +259,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== INVENTORY =====
   async function loadInventory() {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      const localStatuses = localStorage.getItem('udc_sculpture_statuses');
+      sculptureStatuses = {};
+      if (localStatuses) {
+        JSON.parse(localStatuses).forEach(s => { sculptureStatuses[s.id] = s.status; });
+      }
+      renderInventory('all');
+      updateInventoryStats();
+      return;
+    }
+
     // Fetch current statuses from API
     try {
       const res = await fetch('/api/sculptures');
@@ -283,6 +321,29 @@ document.addEventListener('DOMContentLoaded', () => {
       input.addEventListener('change', async () => {
         const sculptureId = input.getAttribute('data-sculpture-id');
         const newStatus = input.checked ? 'sold' : 'available';
+
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          sculptureStatuses[sculptureId] = newStatus;
+          
+          // Save list to localStorage
+          const list = Object.keys(sculptureStatuses).map(key => ({ id: key, status: sculptureStatuses[key] }));
+          localStorage.setItem('udc_sculpture_statuses', JSON.stringify(list));
+
+          // Update the card visually
+          const card = input.closest('.inv-card');
+          const label = card.querySelector('.toggle-label');
+          if (newStatus === 'sold') {
+            card.classList.add('is-sold');
+            label.className = 'toggle-label label-sold';
+            label.textContent = 'Sold';
+          } else {
+            card.classList.remove('is-sold');
+            label.className = 'toggle-label label-available';
+            label.textContent = 'Available';
+          }
+          updateInventoryStats();
+          return;
+        }
 
         try {
           await fetch('/api/admin/sculptures', {
