@@ -11,20 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // === MAMMALS (18 items) ===
     {
       id: 'mammal-1',
-      title: 'Giraffe',
+      title: 'Horse',
       category: 'mammals',
       wood: 'Leadwood',
       origin: 'Southern Africa',
-      desc: 'An exquisite abstract sculpture of a giraffe, showcasing the dense, dark, and heavy qualities of Leadwood. Sourced from naturally dead logs weathered for decades.',
+      desc: 'An exquisite abstract sculpture of a horse, showcasing the dense, dark, and heavy qualities of Leadwood. Sourced from naturally dead logs weathered for decades.',
       imgUrl: 'https://static.wixstatic.com/media/09295b_1d3dcbd2ac8441abba7c4ac35bc23098~mv2.jpg'
     },
     {
       id: 'mammal-2',
-      title: 'Giraffe',
+      title: 'Horse',
       category: 'mammals',
       wood: 'Sneezewood',
       origin: 'Southern Africa',
-      desc: 'Carved from fine-grained Sneezewood, this abstract giraffe sculpture glows with natural satin gold oils, capturing an organic sense of movement and grace.',
+      desc: 'Carved from fine-grained Sneezewood, this abstract horse sculpture glows with natural satin gold oils, capturing an organic sense of movement and speed.',
       imgUrl: 'https://static.wixstatic.com/media/09295b_e41ad6590bc74c2a9a4a103de2e0e821~mv2.jpg'
     },
     {

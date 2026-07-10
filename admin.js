@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== SCULPTURE DATABASE (mirrors main site script.js) =====
   const allSculptures = [
-    { id: 'mammal-1', title: 'Giraffe', category: 'mammals', imgUrl: 'https://static.wixstatic.com/media/09295b_1d3dcbd2ac8441abba7c4ac35bc23098~mv2.jpg' },
-    { id: 'mammal-2', title: 'Giraffe', category: 'mammals', imgUrl: 'https://static.wixstatic.com/media/09295b_e41ad6590bc74c2a9a4a103de2e0e821~mv2.jpg' },
+    { id: 'mammal-1', title: 'Horse', category: 'mammals', imgUrl: 'https://static.wixstatic.com/media/09295b_1d3dcbd2ac8441abba7c4ac35bc23098~mv2.jpg' },
+    { id: 'mammal-2', title: 'Horse', category: 'mammals', imgUrl: 'https://static.wixstatic.com/media/09295b_e41ad6590bc74c2a9a4a103de2e0e821~mv2.jpg' },
     { id: 'mammal-3', title: 'Elephant', category: 'mammals', imgUrl: 'https://static.wixstatic.com/media/09295b_f0143f8769a443a1b3e2927f6048c620~mv2.jpg' },
     { id: 'mammal-4', title: 'Head', category: 'mammals', imgUrl: 'https://static.wixstatic.com/media/09295b_c88d1c6675f14d27a808ff542e1fce90~mv2.jpg' },
     { id: 'mammal-5', title: 'Elephant', category: 'mammals', imgUrl: 'https://static.wixstatic.com/media/09295b_4ebb0c70acf84d5ebf9099a2d24ed462~mv2.jpg' },
