@@ -499,6 +499,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial Load
   renderGallery();
 
+  // Fetch sculpture statuses from the database and apply sold badges
+  async function fetchSculptureStatuses() {
+    try {
+      const res = await fetch('/api/sculptures');
+      if (!res.ok) return;
+      const statuses = await res.json();
+      statuses.forEach(({ id, status }) => {
+        if (status === 'sold') {
+          const itemEl = galleryGrid.querySelector(`[data-id="${id}"]`);
+          if (itemEl) {
+            itemEl.classList.add('sold');
+            // Add sold badge overlay
+            const badge = document.createElement('div');
+            badge.className = 'sold-badge';
+            badge.innerHTML = '<span>SOLD</span>';
+            itemEl.appendChild(badge);
+          }
+        }
+      });
+    } catch (err) {
+      // Silently fail — gallery still works without statuses
+      console.log('Status fetch skipped (API not available)');
+    }
+  }
+  fetchSculptureStatuses();
+
   // 3. Filter Navigation Logic
   const filterBtns = document.querySelectorAll('.filter-btn');
   filterBtns.forEach(btn => {
@@ -651,11 +677,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 8. Contact Form Handling
+  // 8. Contact Form Handling (Real API Submission)
   const contactForm = document.getElementById('contact-form');
   const formStatusMsg = document.getElementById('form-status-msg');
   
-  contactForm.addEventListener('submit', (e) => {
+  contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const submitBtn = document.getElementById('form-submit-btn');
@@ -672,25 +698,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const subjectVal = document.getElementById('subject').value;
     const messageVal = document.getElementById('message').value;
     
-    // Simulate API request/submission
-    setTimeout(() => {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalBtnText;
+    try {
+      const res = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: nameVal,
+          email: emailVal,
+          subject: subjectVal,
+          message: messageVal,
+        }),
+      });
       
-      // Success Alert
-      formStatusMsg.textContent = `Thank you, ${nameVal}! Your inquiry about "${subjectVal}" has been registered. Boniface will get back to you shortly via ${emailVal}.`;
-      formStatusMsg.className = 'form-status-msg success';
+      const data = await res.json();
+      
+      if (res.ok) {
+        // Success
+        formStatusMsg.textContent = `Thank you, ${nameVal}! Your inquiry about "${subjectVal}" has been registered. Boniface will get back to you shortly via ${emailVal}.`;
+        formStatusMsg.className = 'form-status-msg success';
+        formStatusMsg.style.display = 'block';
+        contactForm.reset();
+      } else {
+        // API error
+        formStatusMsg.textContent = data.error || 'Something went wrong. Please try again.';
+        formStatusMsg.className = 'form-status-msg error';
+        formStatusMsg.style.display = 'block';
+      }
+    } catch (err) {
+      // Network error
+      formStatusMsg.textContent = 'Could not connect to the server. Please check your internet and try again.';
+      formStatusMsg.className = 'form-status-msg error';
       formStatusMsg.style.display = 'block';
-      
-      // Reset form
-      contactForm.reset();
-      
-      // Clear message after 10 seconds
-      setTimeout(() => {
-        formStatusMsg.style.display = 'none';
-      }, 10000);
-      
-    }, 1500);
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalBtnText;
+    
+    // Clear status message after 10 seconds
+    setTimeout(() => {
+      formStatusMsg.style.display = 'none';
+    }, 10000);
   });
 
   // 9. Intersection Observer for Scroll Reveals

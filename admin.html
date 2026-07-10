@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Unique Driftwood Creations</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="login-logo-text">Unique Driftwood</span>
+        <span class="login-logo-sub">Admin Dashboard</span>
+      </div>
+      <div class="login-divider"></div>
+      <form id="login-form">
+        <div class="login-field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter admin password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" id="login-btn" class="login-submit-btn">Enter Dashboard</button>
+        <p id="login-error" class="login-error"></p>
+      </form>
+      <a href="index.html" class="login-back-link">← Back to website</a>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="dashboard" style="display: none;">
+    
+    <!-- Top Header -->
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <div class="admin-brand">
+          <span class="admin-brand-name">Unique Driftwood Creations</span>
+          <span class="admin-brand-role">Admin Dashboard</span>
+        </div>
+        <button id="logout-btn" class="logout-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <span class="stat-number" id="stat-total-inquiries">0</span>
+        <span class="stat-label">Total Inquiries</span>
+      </div>
+      <div class="stat-card stat-highlight">
+        <span class="stat-number" id="stat-unread">0</span>
+        <span class="stat-label">Unread</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number" id="stat-available">45</span>
+        <span class="stat-label">Available</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number" id="stat-sold">0</span>
+        <span class="stat-label">Sold</span>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="inquiries">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Inquiries
+      </button>
+      <button class="tab-btn" data-tab="inventory">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Inventory
+      </button>
+    </div>
+
+    <!-- INQUIRIES PANEL -->
+    <div id="panel-inquiries" class="panel active">
+      <div class="panel-header">
+        <h2>Client Inquiries</h2>
+        <button id="refresh-inquiries-btn" class="refresh-btn">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div id="inquiries-empty" class="empty-state">
+        <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="1" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <p>No inquiries yet. They will appear here when someone submits the contact form.</p>
+      </div>
+      <div class="table-wrapper">
+        <table id="inquiries-table" class="data-table" style="display: none;">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Subject</th>
+              <th>Message</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="inquiries-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INVENTORY PANEL -->
+    <div id="panel-inventory" class="panel">
+      <div class="panel-header">
+        <h2>Sculpture Inventory</h2>
+        <div class="inventory-filter-bar">
+          <button class="inv-filter-btn active" data-inv-filter="all">All</button>
+          <button class="inv-filter-btn" data-inv-filter="mammals">Mammals</button>
+          <button class="inv-filter-btn" data-inv-filter="marine">Marine</button>
+          <button class="inv-filter-btn" data-inv-filter="birds">Birds</button>
+          <button class="inv-filter-btn" data-inv-filter="human">Human</button>
+        </div>
+      </div>
+      <div id="inventory-grid" class="inventory-grid"></div>
+    </div>
+
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

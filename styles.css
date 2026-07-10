@@ -966,6 +966,41 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
 }
 
+/* Sold Sculpture Styling */
+.gallery-item.sold {
+  pointer-events: auto;
+}
+
+.gallery-item.sold .gallery-img-container img {
+  filter: grayscale(60%) brightness(50%);
+}
+
+.gallery-item.sold:hover .gallery-img-container img {
+  filter: grayscale(40%) brightness(60%);
+  transform: scale(1.03);
+}
+
+.sold-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+}
+
+.sold-badge span {
+  display: inline-block;
+  background-color: rgba(192, 52, 52, 0.9);
+  color: var(--color-white);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 2px;
+  backdrop-filter: blur(4px);
+}
+
 /* 8. Creation Process Timeline */
 .process-timeline {
   position: relative;
