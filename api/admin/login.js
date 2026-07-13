@@ -19,8 +19,10 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
-  const allowedEmail = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || 'camebloon@gmail.com';
-  if (email.toLowerCase() !== allowedEmail.toLowerCase()) {
+  const allowedEmailsString = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || 'camebloon@gmail.com';
+  const allowedEmailsList = allowedEmailsString.split(',').map(e => e.trim().toLowerCase());
+
+  if (!allowedEmailsList.includes(email.toLowerCase())) {
     return res.status(401).json({ error: 'Invalid admin email address' });
   }
 
