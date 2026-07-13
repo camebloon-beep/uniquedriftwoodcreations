@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.disabled = true;
     loginBtn.textContent = 'Authenticating...';
 
+    const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
     // Local host bypass for previewing
@@ -115,13 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        loginError.textContent = data.error || 'Invalid password';
+        loginError.textContent = data.error || 'Invalid email or password';
         loginBtn.disabled = false;
         loginBtn.textContent = 'Enter Dashboard';
         return;
@@ -214,6 +215,9 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
           </td>
           <td>
+            <button class="reply-inquiry-btn" data-id="${inq.id}" data-email="${escapeHtml(inq.email)}" data-subject="${escapeHtml(inq.subject)}" data-name="${escapeHtml(inq.name)}" title="Reply to inquiry">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </button>
             <button class="delete-inquiry-btn" data-id="${inq.id}" title="Delete inquiry">
               <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
@@ -290,6 +294,23 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Failed to delete inquiry:', err);
           alert('Failed to connect to the server. Please try again.');
         }
+      });
+    });
+
+    // Bind reply buttons
+    tbody.querySelectorAll('.reply-inquiry-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const email = btn.getAttribute('data-email');
+        const subject = btn.getAttribute('data-subject');
+        const name = btn.getAttribute('data-name');
+
+        document.getElementById('reply-inquiry-id').value = id;
+        document.getElementById('reply-to').value = `${name} <${email}>`;
+        document.getElementById('reply-subject').value = `Re: ${subject}`;
+        document.getElementById('reply-message').value = '';
+        
+        document.getElementById('reply-modal').style.display = 'flex';
       });
     });
   }
@@ -443,8 +464,86 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ===== REPLY MODAL LOGIC =====
+  const replyModal = document.getElementById('reply-modal');
+  const replyForm = document.getElementById('reply-form');
+  const replyModalClose = document.getElementById('reply-modal-close');
+  const replyModalCancel = document.getElementById('reply-modal-cancel');
+  const replyModalSend = document.getElementById('reply-modal-send');
+
+  function closeReplyModal() {
+    replyModal.style.display = 'none';
+  }
+
+  replyModalClose.addEventListener('click', closeReplyModal);
+  replyModalCancel.addEventListener('click', closeReplyModal);
+
+  // Close modal when clicking outside the card
+  replyModal.addEventListener('click', (e) => {
+    if (e.target === replyModal) {
+      closeReplyModal();
+    }
+  });
+
+  // Reply Form Submit
+  replyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    replyModalSend.disabled = true;
+    replyModalSend.textContent = 'Sending...';
+
+    const inquiryId = parseInt(document.getElementById('reply-inquiry-id').value);
+    const replyMessage = document.getElementById('reply-message').value;
+
+    // Local host mock reply
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      setTimeout(() => {
+        alert(`[LOCAL TEST] Reply sent successfully!\n\nTo: ${document.getElementById('reply-to').value}\nMessage: ${replyMessage}`);
+        
+        // Mark as read in local storage
+        const localInquiries = JSON.parse(localStorage.getItem('udc_inquiries') || '[]');
+        const inq = localInquiries.find(i => i.id === inquiryId);
+        if (inq) inq.is_read = true;
+        localStorage.setItem('udc_inquiries', JSON.stringify(localInquiries));
+        
+        replyModalSend.disabled = false;
+        replyModalSend.textContent = 'Send Reply';
+        closeReplyModal();
+        loadInquiries(); // Refresh table to show as read
+      }, 800);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/reply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ inquiryId, replyMessage }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Reply sent successfully!');
+        closeReplyModal();
+        loadInquiries(); // Refresh to mark as read
+      } else {
+        alert(data.error || 'Failed to send reply.');
+      }
+    } catch (err) {
+      console.error('Failed to send reply:', err);
+      alert('Failed to connect to the server. Please try again.');
+    }
+
+    replyModalSend.disabled = false;
+    replyModalSend.textContent = 'Send Reply';
+  });
+
   // ===== UTILS =====
   function escapeHtml(str) {
+    if (!str) return '';
     const div = document.createElement('div');
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;

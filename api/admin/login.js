@@ -13,10 +13,15 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { password } = req.body || {};
+  const { email, password } = req.body || {};
 
-  if (!password) {
-    return res.status(400).json({ error: 'Password is required' });
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  const allowedEmail = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || 'camebloon@gmail.com';
+  if (email.toLowerCase() !== allowedEmail.toLowerCase()) {
+    return res.status(401).json({ error: 'Invalid admin email address' });
   }
 
   if (password !== process.env.ADMIN_PASSWORD) {
@@ -25,7 +30,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const token = jwt.sign(
-      { role: 'admin' },
+      { role: 'admin', email },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
