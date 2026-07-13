@@ -498,8 +498,13 @@
       let sum = 0;
       for (let i = 1; i <= 4; i++) {
         const text = document.getElementById('price-' + i).innerText;
-        // Parse numerical value
-        const clean = text.replace(/[^0-9,.]/g, '').replace(',', '.');
+        // Parse numerical value safely
+        let clean = text.replace(/[^0-9,.]/g, '');
+        if (clean.includes(',') && clean.includes('.')) {
+          clean = clean.replace(/,/g, ''); // Remove thousands separator comma
+        } else if (clean.includes(',')) {
+          clean = clean.replace(/,/g, '.'); // Convert decimal comma to dot
+        }
         const val = parseFloat(clean) || 0;
         sum += val;
         
