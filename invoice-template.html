@@ -368,10 +368,10 @@
         <div class="address-block">
           <h3>From (Service Provider)</h3>
           <div class="address-details">
-            <p><strong contenteditable="true">Your Name / Agency</strong></p>
+            <p><strong contenteditable="true">Cameron Parker</strong></p>
             <p contenteditable="true">Web Design & Full-Stack Development</p>
             <p contenteditable="true">Cape Town, South Africa</p>
-            <p contenteditable="true">your.email@gmail.com</p>
+            <p contenteditable="true">camebloon@gmail.com</p>
           </div>
         </div>
         <div class="address-block">
@@ -399,28 +399,28 @@
               <div class="item-title" contenteditable="true">Custom Website Design & Responsive Front-end</div>
               <div class="item-desc" contenteditable="true">Modern, high-performance showcase website designed with vanilla HTML5, premium custom CSS, and interactive JavaScript. Features dynamic gallery filters, image lightboxes, and POPIA-compliant privacy workflows.</div>
             </td>
-            <td contenteditable="true" onblur="recalculate()" id="price-1">R 2,500.00</td>
+            <td contenteditable="true" onblur="recalculate()" id="price-1">R 2 500,00</td>
           </tr>
           <tr>
             <td>
               <div class="item-title" contenteditable="true">Admin Dashboard & Inventory CMS</div>
               <div class="item-desc" contenteditable="true">Secure administrative area allowing real-time sculpture status management ("In Stock" / "Sold Out"), dynamic inquiry counters, and inquiry clearing functions.</div>
             </td>
-            <td contenteditable="true" onblur="recalculate()" id="price-2">R 1,250.00</td>
+            <td contenteditable="true" onblur="recalculate()" id="price-2">R 1 250,00</td>
           </tr>
           <tr>
             <td>
               <div class="item-title" contenteditable="true">Serverless API Integration & Database Setup</div>
               <div class="item-desc" contenteditable="true">Vercel Serverless Function architecture, Neon Serverless PostgreSQL database provisioning, schema seeding, and secured JWT authentication layers.</div>
             </td>
-            <td contenteditable="true" onblur="recalculate()" id="price-3">R 750.00</td>
+            <td contenteditable="true" onblur="recalculate()" id="price-3">R 750,00</td>
           </tr>
           <tr>
             <td>
               <div class="item-title" contenteditable="true">Dashboard Email Reply & SMTP Integration</div>
               <div class="item-desc" contenteditable="true">Nodemailer relay configuration supporting dynamic sender replies. Allows authorized admin accounts (Steven & Boniface) to securely reply to client inquiries directly from their dashboard.</div>
             </td>
-            <td contenteditable="true" onblur="recalculate()" id="price-4">R 500.00</td>
+            <td contenteditable="true" onblur="recalculate()" id="price-4">R 500,00</td>
           </tr>
         </tbody>
       </table>
@@ -430,7 +430,7 @@
         <table class="totals-table">
           <tr>
             <td>Subtotal:</td>
-            <td id="subtotal-val">R 5,000.00</td>
+            <td id="subtotal-val">R 5 000,00</td>
           </tr>
           <tr>
             <td>Vat (0%):</td>
@@ -438,7 +438,7 @@
           </tr>
           <tr class="grand-total">
             <td>Total Due:</td>
-            <td id="total-val">R 5,000.00</td>
+            <td id="total-val">R 5 000,00</td>
           </tr>
         </table>
       </div>
@@ -459,14 +459,15 @@
         <div class="banking-info">
           <h4>Payment Terms & Banking Info</h4>
           <p>Payment due within 14 days of invoice date.</p>
-          <p><strong>Bank:</strong> <span contenteditable="true">FNB (First National Bank)</span></p>
-          <p><strong>Account Holder:</strong> <span contenteditable="true">Your Name</span></p>
-          <p><strong>Account Number:</strong> <span contenteditable="true">1234567890</span></p>
-          <p><strong>Branch Code:</strong> <span contenteditable="true">250655</span></p>
+          <p><strong>Bank:</strong> <span contenteditable="true">ABSA</span></p>
+          <p><strong>Account Holder:</strong> <span contenteditable="true">Cameron Parker</span></p>
+          <p><strong>Account Number:</strong> <span contenteditable="true">9368224561</span></p>
+          <p><strong>Branch Code:</strong> <span contenteditable="true">632005</span></p>
+          <p><strong>Account Type:</strong> <span contenteditable="true">Savings</span></p>
         </div>
         <div class="thanks-block">
           <p contenteditable="true">Thank you for your business!</p>
-          <div class="signature-title" contenteditable="true">Your Agency Name</div>
+          <div class="signature-title" contenteditable="true">Cameron Parker</div>
         </div>
       </div>
     </div>
@@ -493,6 +494,13 @@
       }
     }
 
+    // Custom South African currency formatter: e.g. R 2 500,00
+    function formatZAR(val) {
+      const parts = val.toFixed(2).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' '); // Separate thousands by space
+      return 'R ' + parts.join(','); // Join decimals by comma
+    }
+
     // Auto recalculate prices
     function recalculate() {
       let sum = 0;
@@ -509,12 +517,11 @@
         sum += val;
         
         // Reformat field
-        document.getElementById('price-' + i).innerText = 'R ' + val.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('price-' + i).innerText = formatZAR(val);
       }
 
-      const formattedSum = 'R ' + sum.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById('subtotal-val').innerText = formattedSum;
-      document.getElementById('total-val').innerText = formattedSum;
+      document.getElementById('subtotal-val').innerText = formatZAR(sum);
+      document.getElementById('total-val').innerText = formatZAR(sum);
     }
 
     // Auto-save and persistence logic
