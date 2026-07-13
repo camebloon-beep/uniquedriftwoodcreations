@@ -633,6 +633,26 @@ body {
   background-color: var(--admin-red);
 }
 
+.delete-inquiry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(229, 115, 115, 0.05);
+  border: 1px solid rgba(229, 115, 115, 0.15);
+  border-radius: 4px;
+  color: var(--admin-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.delete-inquiry-btn:hover {
+  background: rgba(229, 115, 115, 0.15);
+  border-color: var(--admin-red);
+  color: var(--admin-red);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .stats-bar {

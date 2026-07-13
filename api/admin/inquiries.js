@@ -42,6 +42,22 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ success: true });
     }
 
+    // DELETE: Delete a specific inquiry
+    if (req.method === 'DELETE') {
+      const { id } = req.body || {};
+
+      if (id === undefined) {
+        return res.status(400).json({ error: 'id is required' });
+      }
+
+      await sql`
+        DELETE FROM inquiries 
+        WHERE id = ${id}
+      `;
+
+      return res.status(200).json({ success: true });
+    }
+
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('Admin inquiries error:', error);
