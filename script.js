@@ -794,4 +794,44 @@ document.addEventListener('DOMContentLoaded', () => {
   revealElements.forEach(el => {
     revealObserver.observe(el);
   });
+
+  // 10. Privacy Policy Modal Controls
+  const privacyModal = document.getElementById('privacy-modal');
+  const privacyPolicyLink = document.getElementById('privacy-policy-link');
+  const footerPrivacyLink = document.getElementById('footer-privacy-link');
+  const privacyModalClose = document.getElementById('privacy-modal-close');
+
+  function openPrivacyModal(e) {
+    e.preventDefault();
+    privacyModal.style.display = 'flex';
+    privacyModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden'; // Stop background scrolling
+  }
+
+  function closePrivacyModal() {
+    privacyModal.style.display = 'none';
+    privacyModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = ''; // Restore background scrolling
+  }
+
+  if (privacyPolicyLink) privacyPolicyLink.addEventListener('click', openPrivacyModal);
+  if (footerPrivacyLink) footerPrivacyLink.addEventListener('click', openPrivacyModal);
+  if (privacyModalClose) privacyModalClose.addEventListener('click', closePrivacyModal);
+
+  // Close modal when clicking outside the card
+  if (privacyModal) {
+    privacyModal.addEventListener('click', (e) => {
+      if (e.target === privacyModal) {
+        closePrivacyModal();
+      }
+    });
+  }
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && privacyModal && privacyModal.style.display === 'flex') {
+      closePrivacyModal();
+    }
+  });
+
 });

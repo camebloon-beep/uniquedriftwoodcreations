@@ -1598,3 +1598,113 @@ h1, h2, h3, h4, h5, h6 {
     grid-auto-rows: 350px;
   }
 }
+
+/* ===== PRIVACY NOTE & MODAL ===== */
+.form-privacy-note {
+  font-size: 0.72rem;
+  color: var(--color-gray);
+  margin-top: 10px;
+  text-align: center;
+}
+
+.form-privacy-note a {
+  color: var(--color-gold);
+  text-decoration: underline;
+  transition: var(--transition);
+}
+
+.form-privacy-note a:hover {
+  color: var(--color-terracotta);
+}
+
+.privacy-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.privacy-modal-card {
+  background-color: #1a1a1a;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 650px;
+  max-height: 85vh;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.privacy-modal-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.privacy-modal-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--color-gold);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.privacy-modal-close {
+  background: none;
+  border: none;
+  color: var(--color-gray);
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.privacy-modal-close:hover {
+  color: var(--color-gold);
+}
+
+.privacy-modal-body {
+  padding: 28px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-sand);
+}
+
+.privacy-modal-body h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--color-gold);
+  margin: 22px 0 8px 0;
+  letter-spacing: 0.05em;
+}
+
+.privacy-modal-body p {
+  margin-bottom: 14px;
+}
+
+.privacy-modal-body ul {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.privacy-modal-body li {
+  margin-bottom: 6px;
+}
