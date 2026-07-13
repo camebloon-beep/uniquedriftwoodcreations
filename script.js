@@ -829,9 +829,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Close modal with Escape key
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && privacyModal && privacyModal.style.display === 'flex') {
-      closePrivacyModal();
+    if (e.key === 'Escape') {
+      if (privacyModal && privacyModal.style.display === 'flex') closePrivacyModal();
+      if (reviewHubModal && reviewHubModal.style.display === 'flex') closeReviewHubModal();
     }
   });
+
+  // 11. Review Hub Modal Controls
+  const reviewHubModal = document.getElementById('review-hub-modal');
+  const btnReviewUs = document.getElementById('btn-review-us');
+  const reviewHubClose = document.getElementById('review-hub-close');
+  const btnDirectFeedback = document.getElementById('btn-direct-feedback');
+
+  function openReviewHubModal() {
+    reviewHubModal.style.display = 'flex';
+    reviewHubModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeReviewHubModal() {
+    reviewHubModal.style.display = 'none';
+    reviewHubModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  if (btnReviewUs) btnReviewUs.addEventListener('click', openReviewHubModal);
+  if (reviewHubClose) reviewHubClose.addEventListener('click', closeReviewHubModal);
+
+  if (reviewHubModal) {
+    reviewHubModal.addEventListener('click', (e) => {
+      if (e.target === reviewHubModal) {
+        closeReviewHubModal();
+      }
+    });
+  }
+
+  if (btnDirectFeedback) {
+    btnDirectFeedback.addEventListener('click', () => {
+      closeReviewHubModal();
+      
+      // Scroll to contact form
+      const contactSection = document.getElementById('contact');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // Pre-select Website Review dropdown option
+      const subjectDropdown = document.getElementById('subject');
+      if (subjectDropdown) {
+        subjectDropdown.value = 'Website Review';
+      }
+
+      // Focus on message field
+      const messageTextarea = document.getElementById('message');
+      if (messageTextarea) {
+        setTimeout(() => {
+          messageTextarea.placeholder = 'Please write your review/testimonial here...';
+          messageTextarea.focus();
+        }, 800); // Wait for scroll transition
+      }
+    });
+  }
 
 });
