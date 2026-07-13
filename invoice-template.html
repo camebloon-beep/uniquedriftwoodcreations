@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice & Quotation Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #ebe0d0;
+      --color-dark: #121212;
+      --color-card: #1a1a1a;
+      --color-gold: #d4af37;
+      --color-terracotta: #c05c35;
+      --color-sand: #dfd5c6;
+      --color-muted: #888;
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #333;
+      font-family: var(--font-body);
+      color: var(--color-dark);
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Generator Control Panel */
+    .controls {
+      background-color: var(--color-dark);
+      border: 1px solid var(--color-gold);
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .controls-title {
+      color: var(--color-gold);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background-color: var(--color-gold);
+      color: var(--color-dark);
+    }
+
+    .btn-primary:hover {
+      background-color: transparent;
+      color: var(--color-gold);
+      border-color: var(--color-gold);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--color-sand);
+      border-color: rgba(255,255,255,0.2);
+      margin-right: 10px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-sand);
+      color: var(--color-white);
+    }
+
+    /* Print Template Container */
+    .invoice-container {
+      background-color: var(--color-bg);
+      width: 100%;
+      max-width: 800px;
+      min-height: 1120px; /* A4 Ratio */
+      padding: 60px 50px;
+      position: relative;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Editable Fields Styling */
+    [contenteditable="true"] {
+      border: 1px dashed transparent;
+      padding: 2px 5px;
+      border-radius: 3px;
+      transition: background-color 0.2s ease;
+    }
+
+    [contenteditable="true"]:hover {
+      background-color: rgba(192, 92, 53, 0.05);
+      border-color: rgba(192, 92, 53, 0.2);
+    }
+
+    [contenteditable="true"]:focus {
+      outline: none;
+      background-color: rgba(192, 92, 53, 0.08);
+      border-color: var(--color-terracotta);
+    }
+
+    /* Header styling */
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 50px;
+      border-bottom: 2px solid var(--color-gold);
+      padding-bottom: 30px;
+    }
+
+    .logo-area h1 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--color-terracotta);
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+    }
+
+    .logo-area p {
+      font-size: 0.85rem;
+      color: var(--color-dark);
+      opacity: 0.8;
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .document-type-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      text-align: right;
+      letter-spacing: 0.1em;
+    }
+
+    .meta-details {
+      margin-top: 15px;
+      text-align: right;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Address Grid */
+    .address-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      margin-bottom: 50px;
+    }
+
+    .address-block h3 {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-terracotta);
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(192, 92, 53, 0.15);
+      padding-bottom: 4px;
+    }
+
+    .address-details {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* Table styling */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+
+    .items-table th {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-bg);
+      background-color: var(--color-dark);
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    .items-table th:last-child {
+      text-align: right;
+    }
+
+    .items-table td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(18, 18, 18, 0.08);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      vertical-align: top;
+    }
+
+    .items-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .item-title {
+      font-weight: 600;
+      color: var(--color-dark);
+      margin-bottom: 4px;
+    }
+
+    .item-desc {
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    /* Total block */
+    .totals-area {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 50px;
+    }
+
+    .totals-table {
+      width: 100%;
+      max-width: 320px;
+      border-collapse: collapse;
+    }
+
+    .totals-table td {
+      padding: 10px 15px;
+      font-size: 0.9rem;
+    }
+
+    .totals-table td:last-child {
+      text-align: right;
+    }
+
+    .totals-table tr.grand-total {
+      border-top: 2px solid var(--color-gold);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-terracotta);
+    }
+
+    /* Footer & Banking Info */
+    .invoice-footer {
+      border-top: 1px dashed rgba(18, 18, 18, 0.15);
+      padding-top: 30px;
+      margin-top: auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 40px;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .banking-info h4 {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-terracotta);
+      margin-bottom: 6px;
+    }
+
+    .thanks-block {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .signature-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--color-dark);
+      margin-top: 10px;
+    }
+
+    /* Print Specific Media Styles */
+    @media print {
+      body {
+        background-color: #fff;
+        padding: 0;
+      }
+      .controls {
+        display: none !important;
+      }
+      .invoice-container {
+        box-shadow: none !important;
+        padding: 40px 30px;
+        min-height: 100%;
+        max-width: 100%;
+      }
+      [contenteditable="true"]:hover,
+      [contenteditable="true"]:focus {
+        background-color: transparent !important;
+        border-color: transparent !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controls Toolbar -->
+  <div class="controls">
+    <div class="controls-title">Invoice & Quotation Generator</div>
+    <div>
+      <button class="btn btn-secondary" onclick="toggleMode()">Switch to Quote</button>
+      <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <!-- A4 Invoice Page -->
+  <div class="invoice-container">
+    <div>
+      <!-- Header -->
+      <div class="invoice-header">
+        <div class="logo-area">
+          <h1>Unique Driftwood Creations</h1>
+          <p>Fine Art & Driftwood Sculptures</p>
+        </div>
+        <div>
+          <div class="document-type-title" id="doc-title" contenteditable="true">INVOICE</div>
+          <div class="meta-details">
+            <div><strong>Date:</strong> <span contenteditable="true" id="date-field">14 July 2026</span></div>
+            <div><strong>Number:</strong> <span contenteditable="true" id="num-field">INV-2026-001</span></div>
+            <div><strong>Reference:</strong> <span contenteditable="true">UDC-WebDev</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address Section -->
+      <div class="address-section">
+        <div class="address-block">
+          <h3>From (Service Provider)</h3>
+          <div class="address-details">
+            <p><strong contenteditable="true">Your Name / Agency</strong></p>
+            <p contenteditable="true">Web Design & Full-Stack Development</p>
+            <p contenteditable="true">Cape Town, South Africa</p>
+            <p contenteditable="true">your.email@gmail.com</p>
+          </div>
+        </div>
+        <div class="address-block">
+          <h3>To (Client Details)</h3>
+          <div class="address-details">
+            <p><strong contenteditable="true">Unique Driftwood Creations</strong></p>
+            <p contenteditable="true">Attn: Steven & Boniface Chikwenhere</p>
+            <p contenteditable="true">Cape Town, South Africa</p>
+            <p contenteditable="true">stevechik01@gmail.com</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th style="width: 70%;">Service Description</th>
+            <th style="width: 30%; text-align: right;">Amount (ZAR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="item-title" contenteditable="true">Custom Website Design & Responsive Front-end</div>
+              <div class="item-desc" contenteditable="true">Modern, high-performance showcase website designed with vanilla HTML5, premium custom CSS, and interactive JavaScript. Features dynamic gallery filters, image lightboxes, and POPIA-compliant privacy workflows.</div>
+            </td>
+            <td contenteditable="true" onblur="recalculate()" id="price-1">R 8,500.00</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-title" contenteditable="true">Admin Dashboard & Inventory CMS</div>
+              <div class="item-desc" contenteditable="true">Secure administrative area allowing real-time sculpture status management ("In Stock" / "Sold Out"), dynamic inquiry counters, and inquiry clearing functions.</div>
+            </td>
+            <td contenteditable="true" onblur="recalculate()" id="price-2">R 6,000.00</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-title" contenteditable="true">Serverless API Integration & Database Setup</div>
+              <div class="item-desc" contenteditable="true">Vercel Serverless Function architecture, Neon Serverless PostgreSQL database provisioning, schema seeding, and secured JWT authentication layers.</div>
+            </td>
+            <td contenteditable="true" onblur="recalculate()" id="price-3">R 4,500.00</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-title" contenteditable="true">Dashboard Email Reply & SMTP Integration</div>
+              <div class="item-desc" contenteditable="true">Nodemailer relay configuration supporting dynamic sender replies. Allows authorized admin accounts (Steven & Boniface) to securely reply to client inquiries directly from their dashboard.</div>
+            </td>
+            <td contenteditable="true" onblur="recalculate()" id="price-4">R 3,000.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Totals Area -->
+      <div class="totals-area">
+        <table class="totals-table">
+          <tr>
+            <td>Subtotal:</td>
+            <td id="subtotal-val">R 22,000.00</td>
+          </tr>
+          <tr>
+            <td>Vat (0%):</td>
+            <td>R 0.00</td>
+          </tr>
+          <tr class="grand-total">
+            <td>Total Due:</td>
+            <td id="total-val">R 22,000.00</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer Area -->
+    <div class="invoice-footer">
+      <div class="footer-grid">
+        <div class="banking-info">
+          <h4>Payment Terms & Banking Info</h4>
+          <p>Payment due within 14 days of invoice date.</p>
+          <p><strong>Bank:</strong> <span contenteditable="true">FNB (First National Bank)</span></p>
+          <p><strong>Account Holder:</strong> <span contenteditable="true">Your Name</span></p>
+          <p><strong>Account Number:</strong> <span contenteditable="true">1234567890</span></p>
+          <p><strong>Branch Code:</strong> <span contenteditable="true">250655</span></p>
+        </div>
+        <div class="thanks-block">
+          <p contenteditable="true">Thank you for your business!</p>
+          <div class="signature-title" contenteditable="true">Your Agency Name</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Autofill current date
+    const today = new Date();
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('date-field').innerText = today.toLocaleDateString('en-ZA', options);
+
+    // switch between Invoice and Quote modes
+    function toggleMode() {
+      const title = document.getElementById('doc-title');
+      const btn = document.querySelector('.controls button');
+      if (title.innerText === 'INVOICE') {
+        title.innerText = 'QUOTATION';
+        btn.innerText = 'Switch to Invoice';
+        document.getElementById('num-field').innerText = 'QT-2026-001';
+      } else {
+        title.innerText = 'INVOICE';
+        btn.innerText = 'Switch to Quote';
+        document.getElementById('num-field').innerText = 'INV-2026-001';
+      }
+    }
+
+    // Auto recalculate prices
+    function recalculate() {
+      let sum = 0;
+      for (let i = 1; i <= 4; i++) {
+        const text = document.getElementById('price-' + i).innerText;
+        // Parse numerical value
+        const clean = text.replace(/[^0-9,.]/g, '').replace(',', '.');
+        const val = parseFloat(clean) || 0;
+        sum += val;
+        
+        // Reformat field
+        document.getElementById('price-' + i).innerText = 'R ' + val.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      const formattedSum = 'R ' + sum.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('subtotal-val').innerText = formattedSum;
+      document.getElementById('total-val').innerText = formattedSum;
+    }
+  </script>
+</body>
+</html>
