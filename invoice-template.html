@@ -339,6 +339,7 @@
     <div class="controls-title">Invoice & Quotation Generator</div>
     <div>
       <button class="btn btn-secondary" onclick="toggleMode()">Switch to Quote</button>
+      <button class="btn btn-secondary" onclick="resetDefaults()">Reset to Defaults</button>
       <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
     </div>
   </div>
@@ -509,6 +510,42 @@
       const formattedSum = 'R ' + sum.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       document.getElementById('subtotal-val').innerText = formattedSum;
       document.getElementById('total-val').innerText = formattedSum;
+    }
+
+    // Auto-save and persistence logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const editables = document.querySelectorAll('[contenteditable="true"]');
+      
+      // Load saved values
+      editables.forEach((el, index) => {
+        const savedVal = localStorage.getItem('invoice_edit_' + index);
+        if (savedVal !== null) {
+          el.innerText = savedVal;
+        }
+
+        // Save on input
+        el.addEventListener('input', () => {
+          localStorage.setItem('invoice_edit_' + index, el.innerText);
+        });
+
+        // Recalculate on blur if it's a price field
+        if (el.id && el.id.startsWith('price-')) {
+          el.addEventListener('blur', recalculate);
+        }
+      });
+
+      // Recalculate totals on load in case prices were loaded from cache
+      recalculate();
+    });
+
+    function resetDefaults() {
+      if (confirm('Are you sure you want to reset all edits back to the default template values?')) {
+        const editables = document.querySelectorAll('[contenteditable="true"]');
+        editables.forEach((el, index) => {
+          localStorage.removeItem('invoice_edit_' + index);
+        });
+        window.location.reload();
+      }
     }
   </script>
 </body>
