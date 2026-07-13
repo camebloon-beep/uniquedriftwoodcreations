@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!itemEl.querySelector('.sold-badge')) {
             const badge = document.createElement('div');
             badge.className = 'sold-badge';
-            badge.innerHTML = '<span>SOLD</span>';
+            badge.innerHTML = '<span>SOLD OUT</span>';
             itemEl.appendChild(badge);
           }
         }

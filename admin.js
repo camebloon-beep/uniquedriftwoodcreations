@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isSold = status === 'sold';
       const cardClass = isSold ? 'inv-card is-sold' : 'inv-card';
       const labelClass = isSold ? 'toggle-label label-sold' : 'toggle-label label-available';
-      const labelText = isSold ? 'Sold' : 'Available';
+      const labelText = isSold ? 'Sold Out' : 'In Stock';
 
       return `
         <div class="${cardClass}" data-id="${s.id}">
@@ -335,11 +335,11 @@ document.addEventListener('DOMContentLoaded', () => {
           if (newStatus === 'sold') {
             card.classList.add('is-sold');
             label.className = 'toggle-label label-sold';
-            label.textContent = 'Sold';
+            label.textContent = 'Sold Out';
           } else {
             card.classList.remove('is-sold');
             label.className = 'toggle-label label-available';
-            label.textContent = 'Available';
+            label.textContent = 'In Stock';
           }
           updateInventoryStats();
           return;
@@ -364,11 +364,11 @@ document.addEventListener('DOMContentLoaded', () => {
           if (newStatus === 'sold') {
             card.classList.add('is-sold');
             label.className = 'toggle-label label-sold';
-            label.textContent = 'Sold';
+            label.textContent = 'Sold Out';
           } else {
             card.classList.remove('is-sold');
             label.className = 'toggle-label label-available';
-            label.textContent = 'Available';
+            label.textContent = 'In Stock';
           }
 
           updateInventoryStats();
@@ -384,8 +384,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateInventoryStats() {
     const soldCount = Object.values(sculptureStatuses).filter(s => s === 'sold').length;
     const availableCount = allSculptures.length - soldCount;
-    document.getElementById('stat-available').textContent = availableCount;
-    document.getElementById('stat-sold').textContent = soldCount;
+    const statAvailableEl = document.getElementById('stat-available');
+    if (statAvailableEl) {
+      statAvailableEl.textContent = availableCount;
+    }
   }
 
   // Inventory filter buttons
